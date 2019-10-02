@@ -81,7 +81,7 @@ MipsSubtarget::MipsSubtarget(const Triple &TT, StringRef CPU, StringRef FS,
       Os16(Mips_Os16), HasMSA(false), UseTCCInDIV(false), HasSym32(false),
       HasEVA(false), DisableMadd4(false), HasMT(false), HasCRC(false),
       HasVirt(false), HasGINV(false), UseIndirectJumpsHazard(false),
-      StackAlignOverride(StackAlignOverride),
+      HasAllegrex(false), StackAlignOverride(StackAlignOverride),
       TM(TM), TargetTriple(TT), TSInfo(),
       InstrInfo(
           MipsInstrInfo::create(initializeSubtargetDependencies(CPU, FS, TM))),
@@ -187,6 +187,10 @@ MipsSubtarget::MipsSubtarget(const Triple &TT, StringRef CPU, StringRef FS,
 
   StringRef ArchName = hasMips64() ? "MIPS64" : "MIPS32";
 
+  if(hasAllegrex()) {
+    ArchName = "Allegrex";
+  }
+  
   if (!hasMips32r5() && hasMSA() && !MSAWarningPrinted) {
     errs() << "warning: the 'msa' ASE requires " << ArchName
            << " revision 5 or greater\n";

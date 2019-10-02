@@ -166,6 +166,8 @@ public:
       ASESet |= Mips::AFL_ASE_VIRT;
     if (P.hasGINV())
       ASESet |= Mips::AFL_ASE_GINV;
+    if (P.hasAllegrex())
+      ASESet |= Mips::AFL_ASE_ALLEGREX;
   }
 
   template <class PredicateLibrary>

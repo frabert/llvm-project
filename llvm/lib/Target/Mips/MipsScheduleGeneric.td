@@ -1611,4 +1611,9 @@ def : InstRW<[GenericWriteAtomic],
     (instregex "^ATOMIC_CMP_SWAP_I(8|16|32|64)_POSTRA$")>;
 def : InstRW<[GenericWriteAtomic],
     (instregex "^ATOMIC_LOAD_(ADD|SUB|AND|OR|XOR|NAND)_I(8|16|32|64)_POSTRA$")>;
+
+// Allegrex instructions
+def GenericAllegrex : ProcResource<1> { let BufferSize = 1; }
+def GenericWriteAllegrex : SchedWriteRes<[GenericAllegrex]> { let Latency = 0; }
+def : InstRW<[GenericWriteAllegrex], (instrs HALT, MTIC, MFIC)>;
 }

@@ -1148,6 +1148,14 @@ static DecodeStatus DecodeCRC(MCInst &MI, InsnType Insn, uint64_t Address,
   return MCDisassembler::Success;
 }
 
+template <typename InsnType>
+static DecodeStatus DecodeAllegrexHalt(MCInst &MI, InsnType Insn,
+                                       uint64_t Address, const void *Decoder) {
+  MI.setOpcode(Mips::HALT);
+  
+  return MCDisassembler::Success;
+}
+
 /// Read two bytes from the ArrayRef and return 16 bit halfword sorted
 /// according to the given endianness.
 static DecodeStatus readInstruction16(ArrayRef<uint8_t> Bytes, uint64_t Address,

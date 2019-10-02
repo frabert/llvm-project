@@ -210,6 +210,8 @@ def FeatureUseIndirectJumpsHazard : SubtargetFeature<"use-indirect-jump-hazard",
                                                     "UseIndirectJumpsHazard",
                                                     "true", "Use indirect jump"
                         " guards to prevent certain speculation based attacks">;
+
+def FeatureAllegrex : SubtargetFeature<"allegrex", "HasAllegrex", "true", "Allegrex support">;
 //===----------------------------------------------------------------------===//
 // Mips processors supported.
 //===----------------------------------------------------------------------===//

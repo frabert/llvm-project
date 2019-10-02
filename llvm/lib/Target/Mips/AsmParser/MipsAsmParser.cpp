@@ -679,6 +679,10 @@ public:
     return getSTI().getFeatureBits()[Mips::FeatureGINV];
   }
 
+  bool hasAllegrex() const {
+    return getSTI().getFeatureBits()[Mips::FeatureAllegrex];
+  }
+
   /// Warn if RegIndex is the same as the current AT.
   void warnIfRegIndexIsAT(unsigned RegIndex, SMLoc Loc);
 

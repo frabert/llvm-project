@@ -251,6 +251,8 @@ def HasVirt  : Predicate<"Subtarget->hasVirt()">,
                AssemblerPredicate<"FeatureVirt">;
 def HasGINV  : Predicate<"Subtarget->hasGINV()">,
                AssemblerPredicate<"FeatureGINV">;
+def HasAllegrex : Predicate<"Subtarget->hasAllegrex()">,
+                  AssemblerPredicate<"FeatureAllegrex">;
 // TODO: Add support for FPOpFusion::Standard
 def AllowFPOpFusion : Predicate<"TM.Options.AllowFPOpFusion =="
                                 " FPOpFusion::Fast">;
@@ -469,6 +471,10 @@ class ASE_VIRT {
 
 class ASE_GINV {
   list <Predicate> ASEPredicate = [HasGINV];
+}
+
+class ASE_ALLEGREX {
+  list <Predicate> ASEPredicate = [HasAllegrex];
 }
 
 // Class used for separating microMIPSr6 and microMIPS (r3) instruction.
@@ -3369,3 +3375,6 @@ include "MicroMips32r6InstrInfo.td"
 // Micromips DSP
 include "MicroMipsDSPInstrFormats.td"
 include "MicroMipsDSPInstrInfo.td"
+
+// Allegrex
+include "MipsInstrAllegrex.td"

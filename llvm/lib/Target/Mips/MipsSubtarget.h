@@ -182,6 +182,9 @@ class MipsSubtarget : public MipsGenSubtargetInfo {
   // HasGINV -- supports R6 Global INValidate ASE
   bool HasGINV;
 
+  // HasAllegrex -- supports Allegrex instructions
+  bool HasAllegrex = false;
+
   // Use hazard variants of the jump register instructions for indirect
   // function calls and jump tables.
   bool UseIndirectJumpsHazard;
@@ -312,6 +315,7 @@ public:
   bool hasCRC() const { return HasCRC; }
   bool hasVirt() const { return HasVirt; }
   bool hasGINV() const { return HasGINV; }
+  bool hasAllegrex() const { return HasAllegrex; }
   bool useIndirectJumpsHazard() const {
     return UseIndirectJumpsHazard && hasMips32r2();
   }
