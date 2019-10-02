@@ -11,10 +11,13 @@ steps:
     cmake -Thost=x64 -G "Visual Studio 15 2017 Win64" -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
   displayName: 'Configure'
 
-- powershell: cmake --build . --config Release
+- powershell: |
+    cd build
+    cmake --build . --config Release
   displayName: 'Build'
 
 - powershell: |
+    cd build
     cpack -G 7Z
     mkdir artifacts
     mv *.7z artifacts
