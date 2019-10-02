@@ -1,0 +1,24 @@
+trigger:
+- allegrex
+
+pool:
+  vmImage: 'vs2017-win2016'
+
+steps:
+- script: |
+    mkdir build
+    cd build
+    cmake -Thost=x64 -G "Visual Studio 15 2017 Win64" -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
+  displayName: 'Configure'
+
+- script: cmake --build . --config Release
+  displayName: 'Build'
+
+- script: |
+    cpack -G 7Z
+    mkdir artifacts
+    mv *.7z artifacts
+  displayName: 'Package'
+
+- publish: $(System.DefaultWorkingDirectory)/build/artifacts/
+  displayName: 'Publish artifacts'
