@@ -15,6 +15,7 @@ steps:
     cd build
     cmake --build . --config Release
   displayName: 'Build'
+  timeoutInMinutes: 0
 
 - powershell: |
     cd build
