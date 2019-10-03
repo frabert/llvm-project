@@ -19,12 +19,5 @@ jobs:
         cmake --build . --config Release
       displayName: 'Build'
     
-    - powershell: |
-        cd build
-        cpack -G 7Z
-        mkdir artifacts
-        mv *.7z artifacts
-      displayName: 'Package'
-    
-    - publish: $(System.DefaultWorkingDirectory)/build/artifacts/
+    - publish: $(System.DefaultWorkingDirectory)/build/
       displayName: 'Publish artifacts'
