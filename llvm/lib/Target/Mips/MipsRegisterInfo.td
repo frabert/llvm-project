@@ -78,6 +78,15 @@ class ACCReg<bits<16> Enc, string n, list<Register> subregs>
 // Mips Hardware Registers
 class HWR<bits<16> Enc, string n> : MipsReg<Enc, n>;
 
+// Allegrex VFPU Registers
+class VFPR<bits<16> Enc, string n, bit transpose, int mat, int col, int row>
+  : MipsReg<Enc, n> {
+  let Transpose = transpose;
+  let Matrix = mat;
+  let Column = col;
+  let Row = row;
+}
+
 //===----------------------------------------------------------------------===//
 //  Registers
 //===----------------------------------------------------------------------===//
@@ -272,6 +281,17 @@ let Namespace = "Mips" in {
   def P1 : MipsReg<1, "p1">;
   def P2 : MipsReg<2, "p2">;
 
+  foreach M = 0-7 in {
+    foreach I = 0-3 in {
+      foreach J = 0-3 in {
+        def C#M#I#J : VFPR<0, "C"#M#I#J, 0, M, I, J>;
+        def R#M#I#J : VFPR<0, "R"#M#I#J, 1, M, I, J>;
+        def M#M#I#J : VFPR<0, "M"#M#I#J, 0, M, I, J>;
+        def E#M#I#J : VFPR<0, "E"#M#I#J, 1, M, I, J>;
+        def S#M#I#J : VFPR<0, "S"#M#I#J, 0, M, I, J>;
+      }
+    }
+  }
 }
 
 //===----------------------------------------------------------------------===//
@@ -497,6 +517,126 @@ def OCTEON_MPL : RegisterClass<"Mips", [i64], 64, (add MPL0, MPL1, MPL2)>,
                  Unallocatable;
 def OCTEON_P : RegisterClass<"Mips", [i64], 64, (add P0, P1, P2)>,
                Unallocatable;
+
+def VFPU_S : RegisterClass<"Mips", [f32], 64, (add
+  S000, S001, S002, S003,
+  S010, S011, S012, S013,
+  S020, S021, S022, S023,
+  S030, S031, S032, S033,
+  S100, S101, S102, S103,
+  S110, S111, S112, S113,
+  S120, S121, S122, S123,
+  S130, S131, S132, S133,
+  S200, S201, S202, S203,
+  S210, S211, S212, S213,
+  S220, S221, S222, S223,
+  S230, S231, S232, S233,
+  S300, S301, S302, S303,
+  S310, S311, S312, S313,
+  S320, S321, S322, S323,
+  S330, S331, S332, S333,
+  S400, S401, S402, S403,
+  S410, S411, S412, S413,
+  S420, S421, S422, S423,
+  S430, S431, S432, S433,
+  S500, S501, S502, S503,
+  S510, S511, S512, S513,
+  S520, S521, S522, S523,
+  S530, S531, S532, S533,
+  S600, S601, S602, S603,
+  S610, S611, S612, S613,
+  S620, S621, S622, S623,
+  S630, S631, S632, S633,
+  S700, S701, S702, S703,
+  S710, S711, S712, S713,
+  S720, S721, S722, S723,
+  S730, S731, S732, S733)>, Unallocatable;
+
+def VFPU_P : RegisterClass<"Mips", [v2f32], 64, (add
+  C000, C002, R000, R020,
+  C010, C012, R001, R021,
+  C020, C022, R002, R022,
+  C030, C032, R003, R023,
+  C100, C102, R100, R120,
+  C110, C112, R101, R121,
+  C120, C122, R102, R122,
+  C130, C132, R103, R123,
+  C200, C202, R200, R220,
+  C210, C212, R201, R221,
+  C220, C222, R202, R222,
+  C230, C232, R203, R223,
+  C300, C302, R300, R320,
+  C310, C312, R301, R321,
+  C320, C322, R302, R322,
+  C330, C332, R303, R323,
+  C400, C402, R400, R420,
+  C410, C412, R401, R421,
+  C420, C422, R402, R422,
+  C430, C432, R403, R423,
+  C500, C502, R500, R520,
+  C510, C512, R501, R521,
+  C520, C522, R502, R522,
+  C530, C532, R503, R523,
+  C600, C602, R600, R620,
+  C610, C612, R601, R621,
+  C620, C622, R602, R622,
+  C630, C632, R603, R623,
+  C700, C702, R700, R720,
+  C710, C712, R701, R721,
+  C720, C722, R702, R722,
+  C730, C732, R703, R723)>, Unallocatable;
+
+def VFPU_T : RegisterClass<"Mips", [v3f32], 64, (add
+  C000, C001, R000, R010,
+  C010, C011, R001, R011,
+  C020, C021, R002, R012,
+  C030, C031, R003, R013,
+  C100, C101, R100, R110,
+  C110, C111, R101, R111,
+  C120, C121, R102, R112,
+  C130, C131, R103, R113,
+  C200, C201, R200, R210,
+  C210, C211, R201, R211,
+  C220, C221, R202, R212,
+  C230, C231, R203, R213,
+  C300, C301, R300, R310,
+  C310, C311, R301, R311,
+  C320, C321, R302, R312,
+  C330, C331, R303, R313,
+  C400, C401, R400, R410,
+  C410, C411, R401, R411,
+  C420, C421, R402, R412,
+  C430, C431, R403, R413,
+  C500, C501, R500, R510,
+  C510, C511, R501, R511,
+  C520, C521, R502, R512,
+  C530, C531, R503, R513,
+  C600, C601, R600, R610,
+  C610, C611, R601, R611,
+  C620, C621, R602, R612,
+  C630, C631, R603, R613,
+  C700, C701, R700, R710,
+  C710, C711, R701, R711,
+  C720, C721, R702, R712,
+  C730, C731, R703, R713)>, Unallocatable;
+
+def VFPU_Q : RegisterClass<"Mips", [v4f32], 64, (add
+  C000, C010, C020, C030,
+  C100, C110, C120, C130,
+  C200, C210, C220, C230,
+  C300, C310, C320, C330,
+  C400, C410, C420, C430,
+  C500, C510, C520, C530,
+  C600, C610, C620, C630,
+  C700, C710, C720, C730,
+  R000, R001, R002, C003,
+  R100, R101, R102, C103,
+  R200, R201, R202, C203,
+  R300, R301, R302, C303,
+  R400, R401, R402, C403,
+  R500, R501, R502, C503,
+  R600, R601, R602, C603,
+  R700, R701, R702, C703), Unallocatable;
 
 // Register Operands.
 
