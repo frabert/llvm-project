@@ -2,21 +2,27 @@ trigger:
 - allegrex
 
 jobs:
-  - job: Job
+  - job: linux_build
+    displayName: Linux build
     timeoutInMinutes: 0
     pool:
-      vmImage: 'vs2017-win2016'
+      vmImage: 'ubuntu-latest'
         
     steps:
-    - powershell: |
+    - script: |
+        sudo apt-get update
+        sudo apt-get install cmake ninja-build
+      displayName: Install build tools
+
+    - script: |
         mkdir build
         cd build
-        cmake -Thost=x64 -G "Visual Studio 15 2017 Win64" -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DLLVM_OPTIMIZED_TABLEGEN=On -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
       displayName: 'Configure'
     
-    - powershell: |
+    - script: |
         cd build
-        cmake --build . --config Release
+        cmake --build . --config Debug --parallel 4
       displayName: 'Build'
     
     - publish: $(System.DefaultWorkingDirectory)/build/
