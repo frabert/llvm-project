@@ -81,10 +81,10 @@ class HWR<bits<16> Enc, string n> : MipsReg<Enc, n>;
 // Allegrex VFPU Registers
 class VFPR<bits<16> Enc, string n, bit transpose, int mat, int col, int row>
   : MipsReg<Enc, n> {
-  let Transpose = transpose;
-  let Matrix = mat;
-  let Column = col;
-  let Row = row;
+  bit Transpose = transpose;
+  int Matrix = mat;
+  int Column = col;
+  int Row = row;
 }
 
 //===----------------------------------------------------------------------===//
