@@ -636,7 +636,7 @@ def VFPU_Q : RegisterClass<"Mips", [v4f32], 64, (add
   R400, R401, R402, C403,
   R500, R501, R502, C503,
   R600, R601, R602, C603,
-  R700, R701, R702, C703), Unallocatable;
+  R700, R701, R702, C703)>, Unallocatable;
 
 // Register Operands.
 
