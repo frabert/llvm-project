@@ -750,6 +750,10 @@ def MSACtrlAsmOperand : MipsAsmRegOperand {
   let Name = "MSACtrlAsmReg";
 }
 
+def VFPUAsmOperand : MipsAsmRegOperand {
+  let Name = "VFPUReg";
+}
+
 def GPR32ZeroOpnd : RegisterOperand<GPR32ZERO> {
   let ParserMatchClass = GPR32ZeroAsmOperand;
 }
@@ -895,4 +899,20 @@ def MSA128DOpnd : RegisterOperand<MSA128D> {
 
 def MSA128CROpnd : RegisterOperand<MSACtrl> {
   let ParserMatchClass = MSACtrlAsmOperand;
+}
+
+def VFPU_SOpnd : RegisterOperand<VFPU_S> {
+  let ParserMatchClass = VFPUAsmOperand;
+}
+
+def VFPU_POpnd : RegisterOperand<VFPU_P> {
+  let ParserMatchClass = VFPUAsmOperand;
+}
+
+def VFPU_TOpnd : RegisterOperand<VFPU_T> {
+  let ParserMatchClass = VFPUAsmOperand;
+}
+
+def VFPU_QOpnd : RegisterOperand<VFPU_Q> {
+  let ParserMatchClass = VFPUAsmOperand;
 }

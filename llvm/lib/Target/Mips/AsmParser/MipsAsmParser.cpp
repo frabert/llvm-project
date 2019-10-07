@@ -769,6 +769,7 @@ public:
     RegKind_HWRegs = 256, /// HWRegs
     RegKind_COP3 = 512,   /// COP3
     RegKind_COP0 = 1024,  /// COP0
+    RegKind_VFPU = 2048,  /// VFPU
     /// Potentially any (e.g. $1)
     RegKind_Numeric = RegKind_GPR | RegKind_FGR | RegKind_FCC | RegKind_MSA128 |
                       RegKind_MSACtrl | RegKind_COP2 | RegKind_ACC |
@@ -999,6 +1000,12 @@ private:
   unsigned getHWRegsReg() const {
     assert(isRegIdx() && (RegIdx.Kind & RegKind_HWRegs) && "Invalid access!");
     unsigned ClassID = Mips::HWRegsRegClassID;
+    return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
+  }
+
+  unsigned getVFPUReg() const {
+    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    unsigned ClassID = Mips::VFPURegClassID;
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
 
@@ -1233,6 +1240,11 @@ public:
 
     for (auto RegNo : getRegList())
       Inst.addOperand(MCOperand::createReg(RegNo));
+  }
+
+  void addVFPURegOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1 && "Invalid number of operands!");
+    Inst.addOperand(MCOperand::createReg(getVFPUReg()));
   }
 
   bool isReg() const override {
@@ -1649,6 +1661,10 @@ public:
 
   bool isMSACtrlAsmReg() const {
     return isRegIdx() && RegIdx.Kind & RegKind_MSACtrl && RegIdx.Index <= 7;
+  }
+
+  bool isVFPUReg() const {
+    return isRegIdx() && RegIdx.Kind & RegKind_VFPU;
   }
 
   /// getStartLoc - Get the location of the first token of this operand.
