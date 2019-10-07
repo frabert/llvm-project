@@ -34,7 +34,7 @@ class VFR<bits<6> op, bits<3> sop, bits<2> sz, dag outs, dag ins, string asmstr,
 
 multiclass VFR_I<bits<6> op, bits<3> sop, string name, list<dag> pattern>
 {
-  def _s : VFR<op, sop, 0, (outs VFPUAsmOperand:$rd), (ins VFPU_S:$rs, VFPU_S:$rt),
+  def _s : VFR<op, sop, 0, (outs VFPU_S:$rd), (ins VFPU_S:$rs, VFPU_S:$rt),
                !strconcat(name, ".s $rd, $rs, $rt"), []>, ASE_ALLEGREX;
   def _p : VFR<op, sop, 1, (outs VFPU_P:$rd), (ins VFPU_P:$rs, VFPU_P:$rt),
                !strconcat(name, ".p $rd, $rs, $rt"), []>, ASE_ALLEGREX;
