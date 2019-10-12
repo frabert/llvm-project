@@ -202,6 +202,26 @@ static DecodeStatus DecodeCOP2RegisterClass(MCInst &Inst,
                                             uint64_t Address,
                                             const void *Decoder);
 
+static DecodeStatus DecodeVFPUSRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder);
+
+static DecodeStatus DecodeVFPUPRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder);
+
+static DecodeStatus DecodeVFPUTRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder);
+
+static DecodeStatus DecodeVFPUQRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder);
+
 static DecodeStatus DecodeBranchTarget(MCInst &Inst,
                                        unsigned Offset,
                                        uint64_t Address,
@@ -2192,6 +2212,54 @@ static DecodeStatus DecodeCOP2RegisterClass(MCInst &Inst,
     return MCDisassembler::Fail;
 
   unsigned Reg = getReg(Decoder, Mips::COP2RegClassID, RegNo);
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeVFPUSRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder) {
+  if (RegNo > 127)
+    return MCDisassembler::Fail;
+
+  unsigned Reg = getReg(Decoder, Mips::VFPUSRegClassID, RegNo);
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeVFPUPRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder) {
+  if (RegNo > 127)
+    return MCDisassembler::Fail;
+
+  unsigned Reg = getReg(Decoder, Mips::VFPUPRegClassID, RegNo);
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeVFPUTRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder) {
+  if (RegNo > 127)
+    return MCDisassembler::Fail;
+
+  unsigned Reg = getReg(Decoder, Mips::VFPUTRegClassID, RegNo);
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeVFPUQRegisterClass(MCInst &Inst,
+                                            unsigned RegNo,
+                                            uint64_t Address,
+                                            const void *Decoder) {
+  if (RegNo > 63)
+    return MCDisassembler::Fail;
+
+  unsigned Reg = getReg(Decoder, Mips::VFPUQRegClassID, RegNo);
   Inst.addOperand(MCOperand::createReg(Reg));
   return MCDisassembler::Success;
 }

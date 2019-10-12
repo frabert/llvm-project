@@ -19,7 +19,8 @@ def MipsP5600Model : SchedMachineModel {
                                          HasMips64r2, HasMips64r5, HasMips64r6,
                                          IsGP64bit, IsPTR64bit,
                                          InMicroMips, InMips16Mode, HasCnMips,
-                                         HasDSP, HasDSPR2, HasMT, HasCRC];
+                                         HasDSP, HasDSPR2, HasMT, HasCRC,
+                                         HasAllegrex];
 }
 
 let SchedModel = MipsP5600Model in {
@@ -632,9 +633,4 @@ def : InstRW<[P5600WriteAtomic],
     (instregex "^ATOMIC_CMP_SWAP_I(8|16|32|64)_POSTRA$")>;
 def : InstRW<[P5600WriteAtomic],
     (instregex "^ATOMIC_LOAD_(ADD|SUB|AND|OR|XOR|NAND)_I(8|16|32|64)_POSTRA$")>;
-
-// Allegrex instructions
-def P5600Allegrex : ProcResource<1> { let BufferSize = 1; }
-def P5600WriteAllegrex : SchedWriteRes<[P5600Allegrex]> { let Latency = 0; }
-def : InstRW<[P5600WriteAllegrex], (instrs HALT, MTIC, MFIC)>;
 }

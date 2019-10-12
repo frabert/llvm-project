@@ -14,7 +14,7 @@ def II_ALLEGREX : InstrItinClass;
 
 class VFR<bits<6> op, bits<3> sop, bits<2> sz, dag outs, dag ins, string asmstr,
          list<dag> pattern>:
-  InstSE<outs, ins, asmstr, pattern, II_ALLEGREX, FrmOther>
+  InstSE<outs, ins, asmstr, pattern, II_ALLEGREX, FrmVFPU>
 {
   bits<7> rd;
   bits<7> rs;
@@ -34,13 +34,13 @@ class VFR<bits<6> op, bits<3> sop, bits<2> sz, dag outs, dag ins, string asmstr,
 
 multiclass VFR_I<bits<6> op, bits<3> sop, string name, list<dag> pattern>
 {
-  def _s : VFR<op, sop, 0, (outs VFPU_S:$rd), (ins VFPU_S:$rs, VFPU_S:$rt),
+  def _s : VFR<op, sop, 0, (outs VFPUS:$rd), (ins VFPUS:$rs, VFPUS:$rt),
                !strconcat(name, ".s $rd, $rs, $rt"), []>, ASE_ALLEGREX;
-  def _p : VFR<op, sop, 1, (outs VFPU_P:$rd), (ins VFPU_P:$rs, VFPU_P:$rt),
+  def _p : VFR<op, sop, 1, (outs VFPUP:$rd), (ins VFPUP:$rs, VFPUP:$rt),
                !strconcat(name, ".p $rd, $rs, $rt"), []>, ASE_ALLEGREX;
-  def _t : VFR<op, sop, 2, (outs VFPU_T:$rd), (ins VFPU_T:$rs, VFPU_T:$rt),
+  def _t : VFR<op, sop, 2, (outs VFPUT:$rd), (ins VFPUT:$rs, VFPUT:$rt),
                !strconcat(name, ".t $rd, $rs, $rt"), []>, ASE_ALLEGREX;
-  def _q : VFR<op, sop, 3, (outs VFPU_Q:$rd), (ins VFPU_Q:$rs, VFPU_Q:$rt),
+  def _q : VFR<op, sop, 3, (outs VFPUQ:$rd), (ins VFPUQ:$rs, VFPUQ:$rt),
                !strconcat(name, ".q $rd, $rs, $rt"), []>, ASE_ALLEGREX;
 }
 

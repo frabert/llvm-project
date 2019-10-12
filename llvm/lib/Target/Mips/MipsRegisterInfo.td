@@ -284,11 +284,11 @@ let Namespace = "Mips" in {
   foreach M = 0-7 in {
     foreach I = 0-3 in {
       foreach J = 0-3 in {
-        def C#M#I#J : VFPR<0, "C"#M#I#J, 0, M, I, J>;
-        def R#M#I#J : VFPR<0, "R"#M#I#J, 1, M, I, J>;
-        def M#M#I#J : VFPR<0, "M"#M#I#J, 0, M, I, J>;
-        def E#M#I#J : VFPR<0, "E"#M#I#J, 1, M, I, J>;
-        def S#M#I#J : VFPR<0, "S"#M#I#J, 0, M, I, J>;
+        def "C"#M#""#I#""#J : VFPR<0, "C"#M#""#I#""#J, 0, M, I, J>;
+        def "R"#M#""#I#""#J : VFPR<0, "R"#M#""#I#""#J, 1, M, I, J>;
+        def "M"#M#""#I#""#J : VFPR<0, "M"#M#""#I#""#J, 0, M, I, J>;
+        def "E"#M#""#I#""#J : VFPR<0, "E"#M#""#I#""#J, 1, M, I, J>;
+        def "S"#M#""#I#""#J : VFPR<0, "S"#M#""#I#""#J, 0, M, I, J>;
       }
     }
   }
@@ -518,7 +518,7 @@ def OCTEON_MPL : RegisterClass<"Mips", [i64], 64, (add MPL0, MPL1, MPL2)>,
 def OCTEON_P : RegisterClass<"Mips", [i64], 64, (add P0, P1, P2)>,
                Unallocatable;
 
-def VFPU_S : RegisterClass<"Mips", [f32], 64, (add
+def VFPUS : RegisterClass<"Mips", [f32], 64, (add
   S000, S001, S002, S003,
   S010, S011, S012, S013,
   S020, S021, S022, S023,
@@ -552,7 +552,7 @@ def VFPU_S : RegisterClass<"Mips", [f32], 64, (add
   S720, S721, S722, S723,
   S730, S731, S732, S733)>, Unallocatable;
 
-def VFPU_P : RegisterClass<"Mips", [v2f32], 64, (add
+def VFPUP : RegisterClass<"Mips", [v2f32], 64, (add
   C000, C002, R000, R020,
   C010, C012, R001, R021,
   C020, C022, R002, R022,
@@ -586,7 +586,7 @@ def VFPU_P : RegisterClass<"Mips", [v2f32], 64, (add
   C720, C722, R702, R722,
   C730, C732, R703, R723)>, Unallocatable;
 
-def VFPU_T : RegisterClass<"Mips", [v3f32], 64, (add
+def VFPUT : RegisterClass<"Mips", [v3f32], 64, (add
   C000, C001, R000, R010,
   C010, C011, R001, R011,
   C020, C021, R002, R012,
@@ -620,7 +620,7 @@ def VFPU_T : RegisterClass<"Mips", [v3f32], 64, (add
   C720, C721, R702, R712,
   C730, C731, R703, R713)>, Unallocatable;
 
-def VFPU_Q : RegisterClass<"Mips", [v4f32], 64, (add
+def VFPUQ : RegisterClass<"Mips", [v4f32], 64, (add
   C000, C010, C020, C030,
   C100, C110, C120, C130,
   C200, C210, C220, C230,
@@ -750,8 +750,24 @@ def MSACtrlAsmOperand : MipsAsmRegOperand {
   let Name = "MSACtrlAsmReg";
 }
 
-def VFPUAsmOperand : MipsAsmRegOperand {
-  let Name = "VFPUReg";
+def VFPUSAsmOperand : MipsAsmRegOperand {
+  let Name = "VFPUSReg";
+  let PredicateMethod = "isVFPUReg";
+}
+
+def VFPUPAsmOperand : MipsAsmRegOperand {
+  let Name = "VFPUPReg";
+  let PredicateMethod = "isVFPUReg";
+}
+
+def VFPUTAsmOperand : MipsAsmRegOperand {
+  let Name = "VFPUTReg";
+  let PredicateMethod = "isVFPUReg";
+}
+
+def VFPUQAsmOperand : MipsAsmRegOperand {
+  let Name = "VFPUQReg";
+  let PredicateMethod = "isVFPUReg";
 }
 
 def GPR32ZeroOpnd : RegisterOperand<GPR32ZERO> {
@@ -901,18 +917,18 @@ def MSA128CROpnd : RegisterOperand<MSACtrl> {
   let ParserMatchClass = MSACtrlAsmOperand;
 }
 
-def VFPU_SOpnd : RegisterOperand<VFPU_S> {
-  let ParserMatchClass = VFPUAsmOperand;
+def VFPUSOpnd : RegisterOperand<VFPUS> {
+  let ParserMatchClass = VFPUSAsmOperand;
 }
 
-def VFPU_POpnd : RegisterOperand<VFPU_P> {
-  let ParserMatchClass = VFPUAsmOperand;
+def VFPUPOpnd : RegisterOperand<VFPUP> {
+  let ParserMatchClass = VFPUPAsmOperand;
 }
 
-def VFPU_TOpnd : RegisterOperand<VFPU_T> {
-  let ParserMatchClass = VFPUAsmOperand;
+def VFPUTOpnd : RegisterOperand<VFPUT> {
+  let ParserMatchClass = VFPUTAsmOperand;
 }
 
-def VFPU_QOpnd : RegisterOperand<VFPU_Q> {
-  let ParserMatchClass = VFPUAsmOperand;
+def VFPUQOpnd : RegisterOperand<VFPUQ> {
+  let ParserMatchClass = VFPUQAsmOperand;
 }

@@ -1003,9 +1003,27 @@ private:
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
 
-  unsigned getVFPUReg() const {
+  unsigned getVFPUSReg() const {
     assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
-    unsigned ClassID = Mips::VFPURegClassID;
+    unsigned ClassID = Mips::VFPUSRegClassID;
+    return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
+  }
+
+  unsigned getVFPUPReg() const {
+    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    unsigned ClassID = Mips::VFPUPRegClassID;
+    return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
+  }
+
+  unsigned getVFPUTReg() const {
+    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    unsigned ClassID = Mips::VFPUTRegClassID;
+    return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
+  }
+
+  unsigned getVFPUQReg() const {
+    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    unsigned ClassID = Mips::VFPUQRegClassID;
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
 
@@ -1242,9 +1260,24 @@ public:
       Inst.addOperand(MCOperand::createReg(RegNo));
   }
 
-  void addVFPURegOperands(MCInst &Inst, unsigned N) const {
+  void addVFPUSRegOperands(MCInst &Inst, unsigned N) const {
     assert(N == 1 && "Invalid number of operands!");
-    Inst.addOperand(MCOperand::createReg(getVFPUReg()));
+    Inst.addOperand(MCOperand::createReg(getVFPUSReg()));
+  }
+
+  void addVFPUPRegOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1 && "Invalid number of operands!");
+    Inst.addOperand(MCOperand::createReg(getVFPUPReg()));
+  }
+
+  void addVFPUTRegOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1 && "Invalid number of operands!");
+    Inst.addOperand(MCOperand::createReg(getVFPUTReg()));
+  }
+
+  void addVFPUQRegOperands(MCInst &Inst, unsigned N) const {
+    assert(N == 1 && "Invalid number of operands!");
+    Inst.addOperand(MCOperand::createReg(getVFPUQReg()));
   }
 
   bool isReg() const override {

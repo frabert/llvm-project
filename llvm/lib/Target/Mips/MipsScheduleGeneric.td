@@ -1615,5 +1615,5 @@ def : InstRW<[GenericWriteAtomic],
 // Allegrex instructions
 def GenericAllegrex : ProcResource<1> { let BufferSize = 1; }
 def GenericWriteAllegrex : SchedWriteRes<[GenericAllegrex]> { let Latency = 0; }
-def : InstRW<[GenericWriteAllegrex], (instrs HALT, MTIC, MFIC)>;
+def : InstRW<[GenericWriteAllegrex], (instrs HALT, MTIC, MFIC, VADD_s, VADD_p, VADD_t, VADD_q, VDIV_s, VDIV_p, VDIV_t, VDIV_q)>;
 }
