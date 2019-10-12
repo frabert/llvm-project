@@ -2,6 +2,27 @@ trigger:
 - allegrex
 
 jobs:
+  - job: windows_build
+    displayName: Windows build
+    timeoutInMinutes: 0
+    pool:
+      vmImage: 'windows-2019'
+    
+    steps:
+    - powershell: |
+        mkdir build
+        cd build
+        cmake -Thost=x64 -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
+      displayName: 'Configure'
+
+    - powershell: |
+        cd build
+        cmake --build . --config Release
+      displayName: 'Build'
+    
+    - publish: $(System.DefaultWorkingDirectory)/build/
+      displayName: 'Publish artifacts'
+
   - job: linux_build
     displayName: Linux build
     timeoutInMinutes: 0
@@ -17,12 +38,12 @@ jobs:
     - script: |
         mkdir build
         cd build
-        cmake -G Ninja -DCMAKE_BUILD_TYPE=Debug -DLLVM_OPTIMIZED_TABLEGEN=On -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
+        cmake -G Ninja -DCMAKE_BUILD_TYPE=Release -DLLVM_TARGETS_TO_BUILD="Mips" -DLLVM_ENABLE_PROJECTS="clang;lld" ../llvm/
       displayName: 'Configure'
     
     - script: |
         cd build
-        cmake --build . --config Debug --parallel 4
+        cmake --build . --config Release --parallel 4
       displayName: 'Build'
     
     - publish: $(System.DefaultWorkingDirectory)/build/
