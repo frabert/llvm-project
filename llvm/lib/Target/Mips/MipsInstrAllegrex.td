@@ -34,13 +34,13 @@ class VFR<bits<6> op, bits<3> sop, bits<2> sz, dag outs, dag ins, string asmstr,
 
 multiclass VFR_I<bits<6> op, bits<3> sop, string name, list<dag> pattern>
 {
-  def _s : VFR<op, sop, 0, (outs VFPUS:$rd), (ins VFPUS:$rs, VFPUS:$rt),
+  def _s : VFR<op, sop, 0, (outs VFPUSOpnd:$rd), (ins VFPUSOpnd:$rs, VFPUSOpnd:$rt),
                !strconcat(name, ".s $rd, $rs, $rt"), []>, ASE_ALLEGREX;
-  def _p : VFR<op, sop, 1, (outs VFPUP:$rd), (ins VFPUP:$rs, VFPUP:$rt),
+  def _p : VFR<op, sop, 1, (outs VFPUPOpnd:$rd), (ins VFPUPOpnd:$rs, VFPUPOpnd:$rt),
                !strconcat(name, ".p $rd, $rs, $rt"), []>, ASE_ALLEGREX;
-  def _t : VFR<op, sop, 2, (outs VFPUT:$rd), (ins VFPUT:$rs, VFPUT:$rt),
+  def _t : VFR<op, sop, 2, (outs VFPUTOpnd:$rd), (ins VFPUTOpnd:$rs, VFPUTOpnd:$rt),
                !strconcat(name, ".t $rd, $rs, $rt"), []>, ASE_ALLEGREX;
-  def _q : VFR<op, sop, 3, (outs VFPUQ:$rd), (ins VFPUQ:$rs, VFPUQ:$rt),
+  def _q : VFR<op, sop, 3, (outs VFPUQOpnd:$rd), (ins VFPUQOpnd:$rs, VFPUQOpnd:$rt),
                !strconcat(name, ".q $rd, $rs, $rt"), []>, ASE_ALLEGREX;
 }
 
