@@ -197,10 +197,59 @@ class MipsAsmParser : public MCTargetAsmParser {
   OperandMatchResultTy matchAnyRegisterWithoutDollar(OperandVector &Operands,
                                                      SMLoc S);
   OperandMatchResultTy parseAnyRegister(OperandVector &Operands);
+  OperandMatchResultTy getVFPURegisterIdx(StringRef Identifier,
+                                          unsigned &Index1,
+                                          unsigned &Index2,
+                                          unsigned &Index3,
+                                          char &Prefix);
+  OperandMatchResultTy parseVFPUSRegister(OperandVector &Operands);
+  OperandMatchResultTy parseVFPUPRegister(OperandVector &Operands);
+  OperandMatchResultTy parseVFPUTRegister(OperandVector &Operands);
+  OperandMatchResultTy parseVFPUQRegister(OperandVector &Operands);
   OperandMatchResultTy parseImm(OperandVector &Operands);
   OperandMatchResultTy parseJumpTarget(OperandVector &Operands);
   OperandMatchResultTy parseInvNum(OperandVector &Operands);
   OperandMatchResultTy parseRegisterList(OperandVector &Operands);
+
+  template<typename RegisterValidator>
+  OperandMatchResultTy parseVFPURegister(OperandVector &Operands,
+                                         RegisterValidator Validator) {
+    MCAsmParser &Parser = getParser();
+    LLVM_DEBUG(dbgs() << "parseVFPURegister\n");
+  
+    auto Token = Parser.getTok();
+  
+    SMLoc S = Token.getLoc();
+  
+    if(Token.isNot(AsmToken::Identifier)) {
+      return MatchOperand_NoMatch;
+    }
+  
+    auto Ident = Token.getIdentifier().take_front(4);
+    char Prefix;
+    unsigned Index1, Index2, Index3, ResIndex;
+  
+    if(getVFPURegisterIdx(Ident,
+                          Index1,
+                          Index2,
+                          Index3,
+                          Prefix) == MatchOperand_NoMatch) {
+      return MatchOperand_NoMatch;
+    }
+
+    if(!Validator(Prefix, Index1, Index2, Index3, ResIndex)) {
+      return MatchOperand_NoMatch;
+    }
+  
+    Operands.push_back(MipsOperand::createVFPUReg(
+      ResIndex, Ident.take_front(4),
+      getContext().getRegisterInfo(), S,
+      getLexer().getLoc(), *this));
+  
+    Parser.Lex();
+  
+    return MatchOperand_Success;
+  }
 
   bool searchSymbolAlias(OperandVector &Operands);
 
@@ -1004,25 +1053,25 @@ private:
   }
 
   unsigned getVFPUSReg() const {
-    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    assert(isRegIdx() && (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
     unsigned ClassID = Mips::VFPUSRegClassID;
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
 
   unsigned getVFPUPReg() const {
-    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    assert(isRegIdx() && (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
     unsigned ClassID = Mips::VFPUPRegClassID;
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
 
   unsigned getVFPUTReg() const {
-    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    assert(isRegIdx() && (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
     unsigned ClassID = Mips::VFPUTRegClassID;
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
 
   unsigned getVFPUQReg() const {
-    assert(isRegIdx() & (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
+    assert(isRegIdx() && (RegIdx.Kind & RegKind_VFPU) && "Invalid acceess!");
     unsigned ClassID = Mips::VFPUQRegClassID;
     return RegIdx.RegInfo->getRegClass(ClassID).getRegister(RegIdx.Index);
   }
@@ -1566,6 +1615,13 @@ public:
   createMSACtrlReg(unsigned Index, StringRef Str, const MCRegisterInfo *RegInfo,
                    SMLoc S, SMLoc E, MipsAsmParser &Parser) {
     return CreateReg(Index, Str, RegKind_MSACtrl, RegInfo, S, E, Parser);
+  }
+
+  // Create an Allegrex VFPU register.
+  static std::unique_ptr<MipsOperand>
+  createVFPUReg(unsigned Index, StringRef Str, const MCRegisterInfo *RegInfo,
+                SMLoc S, SMLoc E, MipsAsmParser &Parser) {
+    return CreateReg(Index, Str, RegKind_VFPU, RegInfo, S, E, Parser);
   }
 
   static std::unique_ptr<MipsOperand>
@@ -6403,6 +6459,103 @@ MipsAsmParser::parseAnyRegister(OperandVector &Operands) {
     Parser.Lex(); // identifier
   }
   return ResTy;
+}
+
+OperandMatchResultTy
+MipsAsmParser::getVFPURegisterIdx(StringRef Identifier,
+                                  unsigned &Index1,
+                                  unsigned &Index2,
+                                  unsigned &Index3,
+                                  char &Prefix) {
+  Prefix = Identifier.front();
+  if(Identifier.substr(1, 1).getAsInteger(10, Index1) || Index1 > 7) {
+    return MatchOperand_NoMatch;
+  }
+
+  if(Identifier.substr(2, 1).getAsInteger(10, Index2) || Index2 > 3) {
+    return MatchOperand_NoMatch;
+  }
+
+  if(Identifier.substr(3, 1).getAsInteger(10, Index3) || Index3 > 3) {
+    return MatchOperand_NoMatch;
+  }
+
+  return MatchOperand_Success;
+}
+
+OperandMatchResultTy
+MipsAsmParser::parseVFPUSRegister(OperandVector &Operands) {
+  LLVM_DEBUG(dbgs() << "parseVFPUSRegister\n");
+
+  return parseVFPURegister(Operands, [](char Prefix,
+                                        unsigned Index1,
+                                        unsigned Index2,
+                                        unsigned Index3,
+                                        unsigned &OutReg) {
+    if(Prefix == 'S') {
+      OutReg = Index1 * 16 + Index2 * 4 + Index3;
+      return true;
+    } else {
+      return false;
+    }
+  });
+}
+
+OperandMatchResultTy
+MipsAsmParser::parseVFPUPRegister(OperandVector &Operands) {
+  LLVM_DEBUG(dbgs() << "parseVFPUPRegister\n");
+
+  return parseVFPURegister(Operands, [](char Prefix,
+                                        unsigned Index1,
+                                        unsigned Index2,
+                                        unsigned Index3,
+                                        unsigned &OutReg) {
+    if(Prefix == 'C' && Index3 % 2 == 0) {
+      OutReg = Index1 * 8 + Index2 * 2 + (Index3 / 2);
+      return true;
+    } else if(Prefix == 'R' && Index2 % 2 == 0) {
+      OutReg = 64 + Index1 * 8 + Index3 * 2 + (Index2 / 2);
+      return true;
+    } else return false;
+  });
+}
+
+OperandMatchResultTy
+MipsAsmParser::parseVFPUTRegister(OperandVector &Operands) {
+  LLVM_DEBUG(dbgs() << "parseVFPUTRegister\n");
+
+  return parseVFPURegister(Operands, [](char Prefix,
+                                        unsigned Index1,
+                                        unsigned Index2,
+                                        unsigned Index3,
+                                        unsigned &OutReg) {
+    if(Prefix == 'C' && Index3 < 2) {
+      OutReg = Index1 * 8 + Index2 * 2 + Index3;
+      return true;
+    } else if(Prefix == 'R' && Index2 < 2) {
+      OutReg = 64 + Index1 * 8 + Index3 * 2 + Index2;
+      return true;
+    } else return false;
+  });
+}
+
+OperandMatchResultTy
+MipsAsmParser::parseVFPUQRegister(OperandVector &Operands) {
+  LLVM_DEBUG(dbgs() << "parseVFPUQRegister\n");
+
+  return parseVFPURegister(Operands, [](char Prefix,
+                                        unsigned Index1,
+                                        unsigned Index2,
+                                        unsigned Index3,
+                                        unsigned &OutReg) {
+    if(Prefix == 'C' && Index3 == 0) {
+      OutReg = Index1 * 4 + Index2;
+      return true;
+    } else if(Prefix == 'R' && Index2 == 0) {
+      OutReg = 32 + Index1 * 4 + Index3;
+      return true;
+    } else return false;
+  });
 }
 
 OperandMatchResultTy
